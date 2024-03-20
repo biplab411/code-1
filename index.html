@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Snippet Submission</title>
+</head>
+<body>
+<h1>Submit Your Code Snippet</h1>
+<form id="codeForm" action="submit.php" method="post">
+    <label for="username">Username:</label><br>
+    <input type="text" id="username" name="username" required><br><br>
+    
+    <label for="codeLanguage">Preferred Code Language:</label><br>
+    <select id="codeLanguage" name="codeLanguage" required>
+        <option value="java">Java</option>
+        <option value="python">Python</option>
+        <option value="javascript">JavaScript</option>
+        <!-- Add more options as needed -->
+    </select><br><br>
+
+    <label for="stdin">Standard Input (stdin):</label><br>
+    <textarea id="stdin" name="stdin"></textarea><br><br>
+
+    <label for="sourceCode">Source Code:</label><br>
+    <textarea id="sourceCode" name="sourceCode" required></textarea><br><br>
+
+    <button type="submit">Submit</button>
+</form>
+
+<h2>Submitted Entries</h2>
+<table id="entriesTable">
+    <tr>
+        <th>Username</th>
+        <th>Code Language</th>
+        <th>Stdin</th>
+        <th>Timestamp</th>
+        <th>Source Code </th>
+    </tr>
+</table>
+
+<script>
+document.getElementById('codeForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    const username = document.getElementById('username').value;
+    const codeLanguage = document.getElementById('codeLanguage').value;
+    const stdin = document.getElementById('stdin').value;
+    const sourceCode = document.getElementById('sourceCode').value.substring(0, 100);
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'submit.php', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            const table = document.getElementById('entriesTable');
+            const row = table.insertRow(1);
+            row.insertCell(0).textContent = response.username;
+            row.insertCell(1).textContent = response.codeLanguage;
+            row.insertCell(2).textContent = response.stdin;
+            row.insertCell(3).textContent = response.timestamp;
+            row.insertCell(4).textContent = response.sourceCode;
+            
+            document.getElementById('codeForm').reset();
+        } else {
+            console.error('Error submitting form');
+        }
+    };
+    
+    const formData = `username=${username}&codeLanguage=${codeLanguage}&stdin=${stdin}&sourceCode=${sourceCode}`;
+    xhr.send(formData);
+});
+</script>
+
+</body>
+</html>
